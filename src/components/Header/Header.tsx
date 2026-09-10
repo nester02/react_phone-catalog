@@ -1,7 +1,17 @@
 import { NavLink } from 'react-router-dom';
+import cn from 'classnames';
 import { useShop } from '../../context/ShopContext';
+import { Logo } from '../Logo';
+import { IconCart, IconClose, IconHeart, IconMenu } from '../Icons';
 import styles from './Header.module.scss';
 import { useState, useEffect } from 'react';
+
+const NAV_ITEMS = [
+  { title: 'Home', to: '/' },
+  { title: 'Phones', to: '/phones' },
+  { title: 'Tablets', to: '/tablets' },
+  { title: 'Accessories', to: '/accessories' },
+] as const;
 
 export const Header = () => {
   const { favorites, cart } = useShop();
@@ -12,7 +22,16 @@ export const Header = () => {
   }, 0);
 
   const navlinkClassName = ({ isActive }: { isActive: boolean }) =>
-    isActive ? `${styles.link} ${styles.active}` : styles.link;
+    cn(styles.navLink, { [styles.navLinkActive]: isActive });
+
+  const iconLinkClassName = ({ isActive }: { isActive: boolean }) =>
+    cn(styles.cell, styles.iconLink, { [styles.iconLinkActive]: isActive });
+
+  const menuLinkClassName = ({ isActive }: { isActive: boolean }) =>
+    cn(styles.menuNavLink, { [styles.menuNavLinkActive]: isActive });
+
+  const menuIconClassName = ({ isActive }: { isActive: boolean }) =>
+    cn(styles.menuBottomLink, { [styles.menuBottomLinkActive]: isActive });
 
   useEffect(() => {
     document.body.style.overflow = isMenuOpen ? 'hidden' : '';
@@ -26,107 +45,108 @@ export const Header = () => {
     <>
       <header className={styles.header}>
         <div className={styles.left}>
-          <NavLink to="/" className={styles.logo}>
-            <img src="/img/logo.png" alt="Nice Gadgets" />
-          </NavLink>
+          <Logo className={styles.logo} />
 
           <nav className={styles.nav} aria-label="Main navigation">
-            <NavLink to="/phones" className={navlinkClassName}>
-              Phones
-            </NavLink>
-            <NavLink to="/tablets" className={navlinkClassName}>
-              Tablets
-            </NavLink>
-            <NavLink to="/accessories" className={navlinkClassName}>
-              Accessories
-            </NavLink>
+            {NAV_ITEMS.map(item => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                className={navlinkClassName}
+              >
+                {item.title}
+              </NavLink>
+            ))}
           </nav>
         </div>
 
-        <div className={styles.actions}>
+        <div className={styles.right}>
           <NavLink
             to="/favorites"
-            className={navlinkClassName}
+            className={iconLinkClassName}
             aria-label="Favorites"
           >
-            <img src="/icons/heart.svg" alt="Favorites" />
-            {favorites.length > 0 && <span>{favorites.length}</span>}
+            <span className={styles.iconWrapper}>
+              <IconHeart />
+
+              {favorites.length > 0 && (
+                <span className={styles.badge}>{favorites.length}</span>
+              )}
+            </span>
           </NavLink>
 
-          <NavLink to="/cart" className={navlinkClassName} aria-label="Cart">
-            <img src="/icons/bag.svg" alt="Cart" />
-            {totalQuantity > 0 && <span>{totalQuantity}</span>}
+          <NavLink to="/cart" className={iconLinkClassName} aria-label="Cart">
+            <span className={styles.iconWrapper}>
+              <IconCart />
+
+              {totalQuantity > 0 && (
+                <span className={styles.badge}>{totalQuantity}</span>
+              )}
+            </span>
           </NavLink>
 
           <button
             type="button"
-            className={styles.menuButton}
+            className={cn(styles.cell, styles.burger)}
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             onClick={() => setIsMenuOpen(prev => !prev)}
           >
-            <img
-              src={isMenuOpen ? '/icons/close.svg' : '/icons/menu.svg'}
-              alt=""
-            />
+            {isMenuOpen ? <IconClose /> : <IconMenu />}
           </button>
         </div>
       </header>
 
-      {isMenuOpen && (
-        <div className={styles.mobileMenu}>
-          <nav className={styles.mobileNav}>
+      <aside
+        className={cn(styles.menu, { [styles.menuOpen]: isMenuOpen })}
+        aria-hidden={!isMenuOpen}
+      >
+        <nav className={styles.menuNav} aria-label="Mobile navigation">
+          {NAV_ITEMS.map(item => (
             <NavLink
-              to="/"
-              className={navlinkClassName}
+              key={item.to}
+              to={item.to}
+              end={item.to === '/'}
+              className={menuLinkClassName}
               onClick={() => setIsMenuOpen(false)}
             >
-              Home
+              {item.title}
             </NavLink>
+          ))}
+        </nav>
 
-            <NavLink
-              to="/phones"
-              className={navlinkClassName}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Phones
-            </NavLink>
+        <div className={styles.menuBottom}>
+          <NavLink
+            to="/favorites"
+            className={menuIconClassName}
+            aria-label="Favorites"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <span className={styles.iconWrapper}>
+              <IconHeart />
 
-            <NavLink
-              to="/tablets"
-              className={navlinkClassName}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Tablets
-            </NavLink>
+              {favorites.length > 0 && (
+                <span className={styles.badge}>{favorites.length}</span>
+              )}
+            </span>
+          </NavLink>
 
-            <NavLink
-              to="/accessories"
-              className={navlinkClassName}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Accessories
-            </NavLink>
-          </nav>
+          <NavLink
+            to="/cart"
+            className={menuIconClassName}
+            aria-label="Cart"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <span className={styles.iconWrapper}>
+              <IconCart />
 
-          <div className={styles.mobileActions}>
-            <NavLink
-              to="/favorites"
-              className={navlinkClassName}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <img src="/icons/heart.svg" alt="" />
-            </NavLink>
-
-            <NavLink
-              to="/cart"
-              className={navlinkClassName}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <img src="/icons/bag.svg" alt="" />
-            </NavLink>
-          </div>
+              {totalQuantity > 0 && (
+                <span className={styles.badge}>{totalQuantity}</span>
+              )}
+            </span>
+          </NavLink>
         </div>
-      )}
+      </aside>
     </>
   );
 };
