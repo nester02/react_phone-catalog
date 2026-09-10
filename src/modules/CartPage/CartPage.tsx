@@ -1,4 +1,8 @@
+import { Link } from 'react-router-dom';
+import { BackButton } from '../../components/BackButton';
+import { IconClose, IconMinus, IconPlus } from '../../components/Icons';
 import { useShop } from '../../context/ShopContext';
+import styles from './CartPage.module.scss';
 
 export const CartPage = () => {
   const { cart, increaseQuantity, decreaseQuantity, removeFromCart } =
@@ -12,40 +16,104 @@ export const CartPage = () => {
     return acc + item.product.price * item.quantity;
   }, 0);
 
-  if (cart.length === 0) {
-    return <h1>Your cart is empty</h1>;
-  }
-
   return (
-    <>
-      {cart.map(item => (
-        <div className="cartItem" key={item.product.id}>
-          <h2>{item.product.name}</h2>
-          <img src={item.product.image} alt={item.product.name} />
-          <p>{item.product.price}</p>
-          <p>{item.quantity}</p>
-          <button
-            type="button"
-            onClick={() => increaseQuantity(item.product.id)}
-          >
-            +
-          </button>
+    <div className={styles.page}>
+      <BackButton />
 
-          <button
-            type="button"
-            onClick={() => decreaseQuantity(item.product.id)}
-          >
-            -
-          </button>
-          <button type="button" onClick={() => removeFromCart(item.product.id)}>
-            remove
-          </button>
+      <h1 className={styles.title}>Cart</h1>
+
+      {cart.length === 0 ? (
+        <div className={styles.empty}>
+          <p className={styles.emptyText}>Your cart is empty</p>
+
+          <img
+            src="/img/cart-is-empty.png"
+            alt="Your cart is empty"
+            className={styles.emptyImage}
+          />
         </div>
-      ))}
-      <div className="cart-total">
-        <p>Total items: {totalQuantity}</p>
-        <p>Total price: ${totalPrice}</p>
-      </div>
-    </>
+      ) : (
+        <div className={styles.content}>
+          <ul className={styles.list}>
+            {cart.map(item => (
+              <li className={styles.item} key={item.product.id}>
+                <button
+                  type="button"
+                  className={styles.remove}
+                  aria-label="Remove from cart"
+                  data-cy="cartDeleteButton"
+                  onClick={() => removeFromCart(item.product.id)}
+                >
+                  <IconClose />
+                </button>
+
+                <Link
+                  to={`/product/${item.product.itemId}`}
+                  className={styles.imageLink}
+                >
+                  <img
+                    src={item.product.image}
+                    alt={item.product.name}
+                    className={styles.image}
+                  />
+                </Link>
+
+                <Link
+                  to={`/product/${item.product.itemId}`}
+                  className={styles.name}
+                >
+                  {item.product.name}
+                </Link>
+
+                <div className={styles.quantity}>
+                  <button
+                    type="button"
+                    className={styles.quantityButton}
+                    aria-label="−"
+                    onClick={() => decreaseQuantity(item.product.id)}
+                  >
+                    <IconMinus />
+                  </button>
+
+                  <span
+                    className={styles.quantityValue}
+                    data-cy="productQauntity"
+                  >
+                    {item.quantity}
+                  </span>
+
+                  <button
+                    type="button"
+                    className={styles.quantityButton}
+                    aria-label="+"
+                    onClick={() => increaseQuantity(item.product.id)}
+                  >
+                    <IconPlus />
+                  </button>
+                </div>
+
+                <span className={styles.itemPrice}>
+                  ${item.product.price * item.quantity}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <div className={styles.summary}>
+            <span className={styles.total}>${totalPrice}</span>
+
+            <span className={styles.totalLabel}>
+              Total for {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}
+            </span>
+
+            <div className={styles.summaryDivider} />
+
+            <button type="button" className={styles.checkout}>
+              Checkout
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
