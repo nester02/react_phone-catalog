@@ -16,8 +16,25 @@ export const ProductsPage = ({ category, title }: ProductsPageProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const sort = searchParams.get('sort') || 'age';
+  const sortParam = searchParams.get('sort');
+  const perPageParam = searchParams.get('perPage');
+  const pageParam = Number(searchParams.get('page') || 1);
+
   const sortedProducts = [...products];
+
+  const sort =
+    sortParam === 'title' || sortParam === 'price' || sortParam === 'age'
+      ? sortParam
+      : 'age';
+
+  const perPage =
+    perPageParam === '4' ||
+    perPageParam === '8' ||
+    perPageParam === '16' ||
+    perPageParam === 'all'
+      ? perPageParam
+      : 'all';
+  const rawPage = Number.isInteger(pageParam) && pageParam >= 1 ? pageParam : 1;
 
   sortedProducts.sort((productA, productB) => {
     switch (sort) {
@@ -30,19 +47,17 @@ export const ProductsPage = ({ category, title }: ProductsPageProps) => {
         return productB.year - productA.year;
     }
   });
-  const perPage = searchParams.get('perPage') || 'all';
-  const page = Number(searchParams.get('page') || 1);
   const itemsPerPage =
     perPage === 'all' ? sortedProducts.length : Number(perPage);
+  const totalPages =
+    perPage === 'all' ? 1 : Math.ceil(sortedProducts.length / itemsPerPage);
+  const page = Math.min(rawPage, totalPages || 1);
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const visibleProducts =
     perPage === 'all'
       ? sortedProducts
       : sortedProducts.slice(startIndex, endIndex);
-  const totalPages =
-    perPage === 'all' ? 1 : Math.ceil(sortedProducts.length / itemsPerPage);
-
   const loadProducts = useCallback(() => {
     setIsLoading(true);
     setIsError(false);

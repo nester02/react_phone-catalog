@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import type { ProductDetails } from '../../types';
 import { getProductDetails } from '../../api';
 import { Loader } from '../../components/Loader';
-import cn from 'classnames';
+import { ProductGallery } from '../../components/ProductGallery';
+import { ProductOptions } from '../../components/ProductOptions';
+import { ProductTechSpecs } from '../../components/ProductTechSpecs';
+import { ProductAbout } from '../../components/ProductAbout';
 
 export const ProductDetailsPage = () => {
   const { productId } = useParams();
@@ -13,7 +16,38 @@ export const ProductDetailsPage = () => {
   const [isError, setIsError] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  useEffect(() => {
+  const navigate = useNavigate();
+
+  const normalizeCapacity = (capacity: string) => capacity.toLowerCase();
+
+  const normalizeColor = (color: string) =>
+    color.replaceAll(' ', '-').toLowerCase();
+
+  const handleCapacityChange = (capacity: string) => {
+    if (!fullProductDetails) {
+      return;
+    }
+
+    const newProductId = `${fullProductDetails.namespaceId}-${normalizeCapacity(
+      capacity,
+    )}-${normalizeColor(fullProductDetails.color)}`;
+
+    navigate(`/product/${newProductId}`);
+  };
+
+  const handleColorChange = (color: string) => {
+    if (!fullProductDetails) {
+      return;
+    }
+
+    const newProductId = `${fullProductDetails.namespaceId}-${normalizeCapacity(
+      fullProductDetails.capacity,
+    )}-${normalizeColor(color)}`;
+
+    navigate(`/product/${newProductId}`);
+  };
+
+  const loadProductDetails = () => {
     if (!productId) {
       setIsLoading(false);
 
@@ -31,13 +65,24 @@ export const ProductDetailsPage = () => {
       })
       .catch(() => setIsError(true))
       .finally(() => setIsLoading(false));
+  };
+
+  useEffect(() => {
+    loadProductDetails();
   }, [productId]);
 
   return (
     <div>
       {isLoading && <Loader />}
 
-      {!isLoading && isError && <h1>Something went wrong</h1>}
+      {!isLoading && isError && (
+        <>
+          <h1>Something went wrong</h1>
+          <button type="button" onClick={loadProductDetails}>
+            Try again
+          </button>
+        </>
+      )}
 
       {!isLoading && !isError && fullProductDetails === null && (
         <h1>Product was not found</h1>
@@ -46,75 +91,41 @@ export const ProductDetailsPage = () => {
       {!isLoading && !isError && fullProductDetails && (
         <>
           <h1>{fullProductDetails.name}</h1>
+
           <div className="details-row">
-            <div className="details-gallery">
-              {fullProductDetails.images.map((image, index) => (
-                <button
-                  key={image}
-                  type="button"
-                  onClick={() => setSelectedImageIndex(index)}
-                  className={cn({ active: selectedImageIndex === index })}
-                >
-                  <img
-                    src={image}
-                    alt={`${fullProductDetails.name}, view ${index + 1}`}
-                  />
-                </button>
-              ))}
-            </div>
-            <img
-              src={fullProductDetails.images[selectedImageIndex]}
-              alt={fullProductDetails.name}
+            <ProductGallery
+              productName={fullProductDetails.name}
+              productImages={fullProductDetails.images}
+              onSelectImage={setSelectedImageIndex}
+              imageIndex={selectedImageIndex}
             />
+
+            <ProductOptions
+              colorsAvailable={fullProductDetails.colorsAvailable}
+              capacityAvailable={fullProductDetails.capacityAvailable}
+              color={fullProductDetails.color}
+              capacity={fullProductDetails.capacity}
+              onColorChange={handleColorChange}
+              onCapacityChange={handleCapacityChange}
+            />
+
             <p>{`$${fullProductDetails.priceDiscount}`}</p>
             <del>{`$${fullProductDetails.priceRegular}`}</del>
-            <dl>
-              <dt>Screen</dt>
-              <dd>{fullProductDetails.screen}</dd>
-              <dt>Resolution</dt>
-              <dd>{fullProductDetails.resolution}</dd>
-              <dt>Processor</dt>
-              <dd>{fullProductDetails.processor}</dd>
-              <dt>RAM</dt>
-              <dd>{fullProductDetails.ram}</dd>
-            </dl>
           </div>
-          <div className="description-row">
-            <div className="description-about">
-              {fullProductDetails.description.map((detail, index) => (
-                  <section key={detail.title} className="description-col">
-                    <h2 className="description-title">{detail.title}</h2>
-                    {detail.text.map(text => (
-                      <p key={`${detail.title}-${index}`}>{text}</p>
-                    )}
-                  </section>
-              ))}
-              </div>
-              <div className="description-speks">
-              <dl>
-                  <dt>Screen</dt>
-                  <dd>{fullProductDetails.screen}</dd>
-                  <dt>Resolution</dt>
-                  <dd>{fullProductDetails.resolution}</dd>
-                  <dt>Processor</dt>
-                  <dd>{fullProductDetails.processor}</dd>
-                  <dt>RAM</dt>
-                  <dd>{fullProductDetails.ram}</dd>
-                  <dt>Сapacity</dt>
-                  <dd>{fullProductDetails.capacity}</dd>
-                  <dt>Сamera</dt>
-                  <dd>{fullProductDetails.camera}</dd>
-                  <dt>Zoom</dt>
-                  <dd>{fullProductDetails.zoom}</dd>
-                  <dt>Cell</dt>
-                  <dd>
-                      {fullProductDetails.cell.map(type => (
 
-                   <span>{type}</span>
-                    ))}
-                  </dd>
-              </dl>
-            </div>
+          <div className="description-row">
+            <ProductAbout description={fullProductDetails.description} />
+
+            <ProductTechSpecs
+              screen={fullProductDetails.screen}
+              resolution={fullProductDetails.resolution}
+              processor={fullProductDetails.processor}
+              ram={fullProductDetails.ram}
+              capacity={fullProductDetails.capacity}
+              camera={fullProductDetails.camera}
+              zoom={fullProductDetails.zoom}
+              cell={fullProductDetails.cell}
+            />
           </div>
         </>
       )}

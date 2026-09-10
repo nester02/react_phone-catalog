@@ -28,3 +28,24 @@ export function getProductDetails(
     );
   });
 }
+
+export function getNewestProducts(): Promise<Product[]> {
+  return getProducts().then(products =>
+    [...products]
+      .sort((ProductA, productB) => productB.year - ProductA.year)
+      .slice(0, 12),
+  );
+}
+
+export function getDiscountProducts(): Promise<Product[]> {
+  return getProducts().then(products =>
+    [...products]
+
+      .sort(
+        (productA, productB) =>
+          (productB.fullPrice - productB.price) / productB.fullPrice -
+          (productA.fullPrice - productA.price) / productA.fullPrice,
+      )
+      .slice(0, 12),
+  );
+}

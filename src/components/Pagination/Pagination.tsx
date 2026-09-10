@@ -16,6 +16,13 @@ export const Pagination = ({
 
   return (
     <>
+      <button
+        type="button"
+        disabled={currentPage === 1}
+        onClick={() => onPageChange(currentPage - 1)}
+      >
+        Prev
+      </button>
       {pageNumbers.map(number => (
         <button
           type="button"
@@ -26,6 +33,13 @@ export const Pagination = ({
           {number}
         </button>
       ))}
+      <button
+        type="button"
+        disabled={currentPage === totalPages}
+        onClick={() => onPageChange(currentPage + 1)}
+      >
+        Next
+      </button>
     </>
   );
 };
