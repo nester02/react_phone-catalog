@@ -1,1 +1,54 @@
-// Styles for ProductsPage are added in the layout port (phase 2).
+@use '../../styles/mixins' as *;
+
+.page {
+  @include container;
+}
+
+.title {
+  @include h1;
+
+  margin-top: 24px;
+
+  @include on-desktop {
+    margin-top: 40px;
+  }
+}
+
+.count {
+  @include body-text;
+
+  margin-top: 8px;
+  color: var(--c-secondary);
+}
+
+.empty {
+  @include h3;
+
+  margin-top: 40px;
+  color: var(--c-secondary);
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+  margin-top: 32px;
+  margin-bottom: 24px;
+
+  @include on-desktop {
+    margin-top: 40px;
+  }
+}
+
+.sortDropdown {
+  width: 100%;
+  max-width: 187px;
+}
+
+.perPageDropdown {
+  width: 136px;
+  flex-shrink: 0;
+}
+
+.pagination {
+  margin-top: 40px;
+}

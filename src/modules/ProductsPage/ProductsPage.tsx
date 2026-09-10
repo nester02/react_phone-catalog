@@ -5,13 +5,36 @@ import { ProductsList } from '../../components/ProductsList';
 import { Loader } from '../../components/Loader';
 import { useSearchParams } from 'react-router-dom';
 import { Pagination } from '../../components/Pagination';
+import { Breadcrumbs } from '../../components/Breadcrumbs';
+import { Dropdown } from '../../components/Dropdown';
+import { ErrorBlock } from '../../components/ErrorBlock';
+import styles from './ProductsPage.module.scss';
 
 type ProductsPageProps = {
   category: Category;
   title: string;
 };
 
-export const ProductsPage = ({ category, title }: ProductsPageProps) => {
+const PAGE_TITLES: Record<Category, string> = {
+  phones: 'Phones',
+  tablets: 'Tablets',
+  accessories: 'Accessories',
+};
+
+const SORT_OPTIONS = [
+  { value: 'age', label: 'Newest' },
+  { value: 'title', label: 'Alphabetically' },
+  { value: 'price', label: 'Cheapest' },
+];
+
+const PER_PAGE_OPTIONS = [
+  { value: '4', label: '4' },
+  { value: '8', label: '8' },
+  { value: '16', label: '16' },
+  { value: 'all', label: 'All' },
+];
+
+export const ProductsPage = ({ category }: ProductsPageProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -80,73 +103,80 @@ export const ProductsPage = ({ category, title }: ProductsPageProps) => {
     setSearchParams(params);
   };
 
+  const handleSortChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+
+    params.set('sort', value);
+    setSearchParams(params);
+  };
+
+  const handlePerPageChange = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+
+    if (value === 'all') {
+      params.delete('perPage');
+    } else {
+      params.set('perPage', value);
+    }
+
+    params.delete('page');
+    setSearchParams(params);
+  };
+
   useEffect(() => {
     loadProducts();
   }, [loadProducts]);
 
+  const pageTitle = PAGE_TITLES[category];
+
   return (
-    <>
-      <h1>{title}</h1>
-      <select
-        value={sort}
-        onChange={event => {
-          const params = new URLSearchParams(searchParams);
+    <div className={styles.page}>
+      <Breadcrumbs items={[{ title: pageTitle }]} />
 
-          params.set('sort', event.target.value);
-          setSearchParams(params);
-        }}
-      >
-        <option value="age">Newest</option>
-        <option value="title">Alphabetically</option>
-        <option value="price">Cheapest</option>
-      </select>
-      <select
-        value={perPage}
-        onChange={event => {
-          const value = event.target.value;
-          const params = new URLSearchParams(searchParams);
+      <h1 className={styles.title}>{pageTitle}</h1>
 
-          if (value === 'all') {
-            params.delete('perPage');
-          } else {
-            params.set('perPage', value);
-          }
+      <p className={styles.count} data-cy="productsCount">
+        {`${products.length} ${products.length === 1 ? 'model' : 'models'}`}
+      </p>
 
-          params.delete('page');
-          setSearchParams(params);
-        }}
-      >
-        <option value="4">4</option>
-        <option value="8">8</option>
-        <option value="16">16</option>
-        <option value="all">all</option>
-      </select>
       {isLoading && <Loader />}
-      {!isLoading && isError && (
-        <>
-          <h2>Something went wrong</h2>
-
-          <button type="button" onClick={loadProducts}>
-            Reload
-          </button>
-        </>
-      )}
+      {!isLoading && isError && <ErrorBlock onRetry={loadProducts} />}
       {!isLoading && !isError && products.length > 0 && (
         <>
+          <div className={styles.controls}>
+            <Dropdown
+              label="Sort by"
+              value={sort}
+              options={SORT_OPTIONS}
+              onChange={handleSortChange}
+              className={styles.sortDropdown}
+            />
+
+            <Dropdown
+              label="Items on page"
+              value={perPage}
+              options={PER_PAGE_OPTIONS}
+              onChange={handlePerPageChange}
+              className={styles.perPageDropdown}
+            />
+          </div>
+
           <ProductsList products={visibleProducts} />
 
           {perPage !== 'all' && totalPages > 1 && (
-            <Pagination
-              onPageChange={handlePageChange}
-              totalPages={totalPages}
-              currentPage={page}
-            />
+            <div className={styles.pagination}>
+              <Pagination
+                onPageChange={handlePageChange}
+                totalPages={totalPages}
+                currentPage={page}
+              />
+            </div>
           )}
         </>
       )}
       {!isLoading && !isError && products.length === 0 && (
-        <p>{`There are no ${category} yet`}</p>
+        <p className={styles.empty}>{`There are no ${category} yet`}</p>
       )}
-    </>
+    </div>
   );
 };

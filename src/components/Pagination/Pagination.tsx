@@ -1,7 +1,45 @@
+import cn from 'classnames';
+import { IconChevronLeft, IconChevronRight } from '../Icons';
+import styles from './Pagination.module.scss';
+
 type PaginationProps = {
   totalPages: number;
   currentPage: number;
   onPageChange: (page: number) => void;
+};
+
+type PaginationItem =
+  | { type: 'page'; value: number }
+  | { type: 'dots'; id: string };
+
+// Presentational only: decides which page numbers are shown (with "…" gaps)
+const getItems = (pageCount: number, current: number): PaginationItem[] => {
+  if (pageCount <= 7) {
+    return Array.from({ length: pageCount }, (_, index) => ({
+      type: 'page',
+      value: index + 1,
+    }));
+  }
+
+  const items: PaginationItem[] = [{ type: 'page', value: 1 }];
+  const start = Math.max(2, current - 1);
+  const end = Math.min(pageCount - 1, current + 1);
+
+  if (start > 2) {
+    items.push({ type: 'dots', id: 'left' });
+  }
+
+  for (let page = start; page <= end; page += 1) {
+    items.push({ type: 'page', value: page });
+  }
+
+  if (end < pageCount - 1) {
+    items.push({ type: 'dots', id: 'right' });
+  }
+
+  items.push({ type: 'page', value: pageCount });
+
+  return items;
 };
 
 export const Pagination = ({
@@ -9,37 +47,54 @@ export const Pagination = ({
   currentPage,
   onPageChange,
 }: PaginationProps) => {
-  const pageNumbers = Array.from(
-    { length: totalPages },
-    (_, index) => index + 1,
-  );
+  const items = getItems(totalPages, currentPage);
 
   return (
-    <>
+    <nav className={styles.pagination} data-cy="pagination" aria-label="Pages">
       <button
         type="button"
+        className={styles.arrow}
+        aria-label="Previous"
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
       >
-        Prev
+        <IconChevronLeft />
       </button>
-      {pageNumbers.map(number => (
-        <button
-          type="button"
-          key={number}
-          disabled={currentPage === number}
-          onClick={() => onPageChange(number)}
-        >
-          {number}
-        </button>
-      ))}
+
+      <ul className={styles.pages}>
+        {items.map(item =>
+          item.type === 'dots' ? (
+            <li key={`dots-${item.id}`} className={styles.dots}>
+              …
+            </li>
+          ) : (
+            <li key={item.value}>
+              <button
+                type="button"
+                className={cn(styles.page, {
+                  [styles.pageActive]: item.value === currentPage,
+                })}
+                aria-label={`Go to page ${item.value}`}
+                aria-current={item.value === currentPage ? 'page' : undefined}
+                disabled={currentPage === item.value}
+                onClick={() => onPageChange(item.value)}
+              >
+                {item.value}
+              </button>
+            </li>
+          ),
+        )}
+      </ul>
+
       <button
         type="button"
+        className={styles.arrow}
+        aria-label="Next"
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}
       >
-        Next
+        <IconChevronRight />
       </button>
-    </>
+    </nav>
   );
 };
