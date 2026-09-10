@@ -1,12 +1,22 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { ProductDetails } from '../../types';
 import { getProductDetails } from '../../api';
 import { Loader } from '../../components/Loader';
+import { ErrorBlock } from '../../components/ErrorBlock';
+import { Breadcrumbs } from '../../components/Breadcrumbs';
+import { BackButton } from '../../components/BackButton';
 import { ProductGallery } from '../../components/ProductGallery';
 import { ProductOptions } from '../../components/ProductOptions';
 import { ProductTechSpecs } from '../../components/ProductTechSpecs';
 import { ProductAbout } from '../../components/ProductAbout';
+import styles from './ProductDetailsPage.module.scss';
+
+const CATEGORY_TITLES = {
+  phones: 'Phones',
+  tablets: 'Tablets',
+  accessories: 'Accessories',
+};
 
 export const ProductDetailsPage = () => {
   const { productId } = useParams();
@@ -72,27 +82,52 @@ export const ProductDetailsPage = () => {
   }, [productId]);
 
   return (
-    <div>
+    <div className={styles.page}>
       {isLoading && <Loader />}
 
       {!isLoading && isError && (
-        <>
-          <h1>Something went wrong</h1>
-          <button type="button" onClick={loadProductDetails}>
-            Try again
-          </button>
-        </>
+        <ErrorBlock buttonText="Try again" onRetry={loadProductDetails} />
       )}
 
       {!isLoading && !isError && fullProductDetails === null && (
-        <h1>Product was not found</h1>
+        <div className={styles.notFound}>
+          <h1 className={styles.notFoundTitle}>Product was not found</h1>
+
+          <p className={styles.notFoundText}>
+            Looks like this product does not exist in our store
+          </p>
+
+          <img
+            src="/img/product-not-found.png"
+            alt="Product was not found"
+            className={styles.notFoundImage}
+          />
+
+          <Link to="/" className={styles.notFoundLink}>
+            Go Home
+          </Link>
+        </div>
       )}
 
       {!isLoading && !isError && fullProductDetails && (
         <>
-          <h1>{fullProductDetails.name}</h1>
+          <Breadcrumbs
+            items={[
+              {
+                title: CATEGORY_TITLES[fullProductDetails.category],
+                to: `/${fullProductDetails.category}`,
+              },
+              { title: fullProductDetails.name },
+            ]}
+          />
 
-          <div className="details-row">
+          <div className={styles.back}>
+            <BackButton />
+          </div>
+
+          <h1 className={styles.title}>{fullProductDetails.name}</h1>
+
+          <div className={styles.top}>
             <ProductGallery
               productName={fullProductDetails.name}
               productImages={fullProductDetails.images}
@@ -100,20 +135,62 @@ export const ProductDetailsPage = () => {
               imageIndex={selectedImageIndex}
             />
 
-            <ProductOptions
-              colorsAvailable={fullProductDetails.colorsAvailable}
-              capacityAvailable={fullProductDetails.capacityAvailable}
-              color={fullProductDetails.color}
-              capacity={fullProductDetails.capacity}
-              onColorChange={handleColorChange}
-              onCapacityChange={handleCapacityChange}
-            />
+            <div className={styles.options}>
+              <ProductOptions
+                colorsAvailable={fullProductDetails.colorsAvailable}
+                capacityAvailable={fullProductDetails.capacityAvailable}
+                color={fullProductDetails.color}
+                capacity={fullProductDetails.capacity}
+                onColorChange={handleColorChange}
+                onCapacityChange={handleCapacityChange}
+              />
 
-            <p>{`$${fullProductDetails.priceDiscount}`}</p>
-            <del>{`$${fullProductDetails.priceRegular}`}</del>
+              <div className={styles.prices}>
+                <span className={styles.price}>
+                  {`$${fullProductDetails.priceDiscount}`}
+                </span>
+
+                {fullProductDetails.priceRegular >
+                  fullProductDetails.priceDiscount && (
+                  <del className={styles.fullPrice}>
+                    {`$${fullProductDetails.priceRegular}`}
+                  </del>
+                )}
+              </div>
+
+              <div className={styles.shortSpecs}>
+                <div className={styles.specRow}>
+                  <span className={styles.specName}>Screen</span>
+                  <span className={styles.specValue}>
+                    {fullProductDetails.screen}
+                  </span>
+                </div>
+
+                <div className={styles.specRow}>
+                  <span className={styles.specName}>Resolution</span>
+                  <span className={styles.specValue}>
+                    {fullProductDetails.resolution}
+                  </span>
+                </div>
+
+                <div className={styles.specRow}>
+                  <span className={styles.specName}>Processor</span>
+                  <span className={styles.specValue}>
+                    {fullProductDetails.processor}
+                  </span>
+                </div>
+
+                <div className={styles.specRow}>
+                  <span className={styles.specName}>RAM</span>
+                  <span className={styles.specValue}>
+                    {fullProductDetails.ram}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="description-row">
+          <div className={styles.sections}>
             <ProductAbout description={fullProductDetails.description} />
 
             <ProductTechSpecs

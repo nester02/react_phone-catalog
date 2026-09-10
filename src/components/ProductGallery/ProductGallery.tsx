@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import styles from './ProductGallery.module.scss';
 
 type ProductGalleryProps = {
   productName: string;
@@ -14,20 +15,31 @@ export const ProductGallery = ({
   imageIndex,
 }: ProductGalleryProps) => {
   return (
-    <>
-      <div className="details-gallery">
+    <div className={styles.gallery}>
+      <ul className={styles.thumbs}>
         {productImages.map((image, index) => (
-          <button
-            key={image}
-            type="button"
-            onClick={() => onSelectImage(index)}
-            className={cn({ active: imageIndex === index })}
-          >
-            <img src={image} alt={`${productName}, view ${index + 1}`} />
-          </button>
+          <li key={image}>
+            <button
+              type="button"
+              onClick={() => onSelectImage(index)}
+              className={cn(styles.thumb, {
+                [styles.thumbActive]: imageIndex === index,
+              })}
+              aria-label={`${productName}, view ${index + 1}`}
+            >
+              <img src={image} alt="" className={styles.thumbImage} />
+            </button>
+          </li>
         ))}
+      </ul>
+
+      <div className={styles.mainImageWrapper}>
+        <img
+          src={productImages[imageIndex]}
+          alt={productName}
+          className={styles.mainImage}
+        />
       </div>
-      <img src={productImages[imageIndex]} alt={productName} />
-    </>
+    </div>
   );
 };

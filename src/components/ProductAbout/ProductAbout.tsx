@@ -1,3 +1,5 @@
+import styles from './ProductAbout.module.scss';
+
 type DescriptionItem = {
   title: string;
   text: string[];
@@ -9,16 +11,25 @@ type ProductAboutProps = {
 
 export const ProductAbout = ({ description }: ProductAboutProps) => {
   return (
-    <div className="description-about">
+    <section className={styles.section} data-cy="productDescription">
+      <h2 className={styles.sectionTitle}>About</h2>
+
+      <div className={styles.sectionDivider} />
+
       {description.map((detail, index) => (
-        <section key={detail.title} className="description-col">
-          <h2 className="description-title">{detail.title}</h2>
+        <div key={detail.title} className={styles.aboutBlock}>
+          <h3 className={styles.aboutTitle}>{detail.title}</h3>
 
           {detail.text.map((text, textIndex) => (
-            <p key={`${detail.title}-${index}-${textIndex}`}>{text}</p>
+            <p
+              className={styles.aboutText}
+              key={`${detail.title}-${index}-${textIndex}`}
+            >
+              {text}
+            </p>
           ))}
-        </section>
+        </div>
       ))}
-    </div>
+    </section>
   );
 };

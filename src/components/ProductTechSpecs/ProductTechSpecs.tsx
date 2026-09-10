@@ -1,3 +1,5 @@
+import styles from './ProductTechSpecs.module.scss';
+
 type ProductTechSpecsProps = {
   screen: string;
   resolution: string;
@@ -20,46 +22,65 @@ export const ProductTechSpecs = ({
   cell,
 }: ProductTechSpecsProps) => {
   return (
-    <dl>
-      <dt>Screen</dt>
-      <dd>{screen}</dd>
+    <section className={styles.section}>
+      <h2 className={styles.sectionTitle}>Tech specs</h2>
 
-      <dt>Resolution</dt>
-      <dd>{resolution}</dd>
+      <div className={styles.sectionDivider} />
 
-      <dt>Processor</dt>
-      <dd>{processor}</dd>
+      <dl className={styles.specsList}>
+        <div className={styles.row}>
+          <dt className={styles.name}>Screen</dt>
+          <dd className={styles.value}>{screen}</dd>
+        </div>
 
-      <dt>RAM</dt>
-      <dd>{ram}</dd>
+        <div className={styles.row}>
+          <dt className={styles.name}>Resolution</dt>
+          <dd className={styles.value}>{resolution}</dd>
+        </div>
 
-      <dt>Capacity</dt>
-      <dd>{capacity}</dd>
+        <div className={styles.row}>
+          <dt className={styles.name}>Processor</dt>
+          <dd className={styles.value}>{processor}</dd>
+        </div>
 
-      {camera && (
-        <>
-          <dt>Camera</dt>
-          <dd>{camera}</dd>
-        </>
-      )}
+        <div className={styles.row}>
+          <dt className={styles.name}>RAM</dt>
+          <dd className={styles.value}>{ram}</dd>
+        </div>
 
-      {zoom && (
-        <>
-          <dt>Zoom</dt>
-          <dd>{zoom}</dd>
-        </>
-      )}
+        <div className={styles.row}>
+          <dt className={styles.name}>Built in memory</dt>
+          <dd className={styles.value}>{capacity}</dd>
+        </div>
 
-      {cell.length > 0 && (
-        <>
-          <dt>Cell</dt>
-          <dd>
-            {cell.map(type => (
-              <span key={type}>{type}</span>
-            ))}
-          </dd>
-        </>
-      )}
-    </dl>
+        {camera && (
+          <div className={styles.row}>
+            <dt className={styles.name}>Camera</dt>
+            <dd className={styles.value}>{camera}</dd>
+          </div>
+        )}
+
+        {zoom && (
+          <div className={styles.row}>
+            <dt className={styles.name}>Zoom</dt>
+            <dd className={styles.value}>{zoom}</dd>
+          </div>
+        )}
+
+        {cell.length > 0 && (
+          <div className={styles.row}>
+            <dt className={styles.name}>Cell</dt>
+            <dd className={styles.value}>
+              {cell.map((type, index) => (
+                <span key={type}>
+                  {index > 0 && ', '}
+                  {type}
+                </span>
+              ))}
+            </dd>
+          </div>
+        )}
+      </dl>
+    </section>
   );
 };
