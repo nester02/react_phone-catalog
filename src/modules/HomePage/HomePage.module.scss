@@ -1,8 +1,22 @@
-section {
-  max-width: 1152px;
-  margin: 0 auto;
-  padding: 0 16px;
+@use '../../styles/mixins' as *;
+
+.page {
+  @include container;
+
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+
+  @include on-tablet {
+    gap: 64px;
+  }
+
+  @include on-desktop {
+    gap: 80px;
+  }
 }
+
+// ---- Hero block below is intentionally left as the user wrote it ----
 
 .hero {
   // width / spacing

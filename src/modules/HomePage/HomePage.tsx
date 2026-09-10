@@ -5,14 +5,9 @@ import { useEffect, useState } from 'react';
 import type { Product } from '../../types';
 import { getDiscountProducts, getNewestProducts } from '../../api/products';
 import { Loader } from '../../components/Loader';
-import { ProductsList } from '../../components/ProductsList';
-import { Link } from 'react-router-dom';
-
-const categories = [
-  { title: 'Phones', path: '/phones' },
-  { title: 'Tablets', path: '/tablets' },
-  { title: 'Accessories', path: '/accessories' },
-];
+import { ErrorBlock } from '../../components/ErrorBlock';
+import { ProductsSlider } from '../../components/ProductsSlider';
+import { Categories } from './components/Categories';
 
 const slides = [
   {
@@ -69,16 +64,10 @@ export const HomePage = () => {
       });
   }, []);
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
-  if (isError) {
-    return <div>Error loading products</div>;
-  }
-
   return (
-    <>
+    <div className={styles.page}>
+      <h1 className="visually-hidden">Product Catalog</h1>
+
       <section className={styles.hero}>
         <h1 className={styles.heroTitle}>Welcome to Nice Gadgets store!</h1>
         <div className={styles.slider}>
@@ -122,32 +111,23 @@ export const HomePage = () => {
         </div>
       </section>
 
-      <section>
-        <h2>Brand new models</h2>
-        <ProductsList products={newProducts} />
-      </section>
+      {isLoading && <Loader />}
 
-      <section>
-        <h2>Hot prices</h2>
-        <ProductsList products={discountProducts} />
-      </section>
+      {!isLoading && isError && <ErrorBlock title="Error loading products" />}
 
-      <section>
-        <h2>Shop by category</h2>
+      {!isLoading && !isError && (
+        <>
+          <ProductsSlider
+            title="Brand new models"
+            products={newProducts}
+            showDiscount={false}
+          />
 
-        <div>
-          {categories.map(category => (
-            <Link key={category.path} to={category.path}>
-              <img
-                src={`/images/${category.title.toLowerCase()}.jpg`}
-                alt={category.title}
-              />
+          <Categories />
 
-              <h3>{category.title}</h3>
-            </Link>
-          ))}
-        </div>
-      </section>
-    </>
+          <ProductsSlider title="Hot prices" products={discountProducts} />
+        </>
+      )}
+    </div>
   );
 };
