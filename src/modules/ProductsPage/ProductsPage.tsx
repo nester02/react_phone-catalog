@@ -6,7 +6,6 @@ import { Loader } from '../../components/Loader';
 import { useSearchParams } from 'react-router-dom';
 import { Pagination } from '../../components/Pagination';
 import { Breadcrumbs } from '../../components/Breadcrumbs';
-import { Dropdown } from '../../components/Dropdown';
 import { ErrorBlock } from '../../components/ErrorBlock';
 import styles from './ProductsPage.module.scss';
 
@@ -20,19 +19,6 @@ const PAGE_TITLES: Record<Category, string> = {
   tablets: 'Tablets',
   accessories: 'Accessories',
 };
-
-const SORT_OPTIONS = [
-  { value: 'age', label: 'Newest' },
-  { value: 'title', label: 'Alphabetically' },
-  { value: 'price', label: 'Cheapest' },
-];
-
-const PER_PAGE_OPTIONS = [
-  { value: '4', label: '4' },
-  { value: '8', label: '8' },
-  { value: '16', label: '16' },
-  { value: 'all', label: 'All' },
-];
 
 export const ProductsPage = ({ category }: ProductsPageProps) => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -107,6 +93,7 @@ export const ProductsPage = ({ category }: ProductsPageProps) => {
     const params = new URLSearchParams(searchParams);
 
     params.set('sort', value);
+    params.delete('page');
     setSearchParams(params);
   };
 
@@ -144,21 +131,34 @@ export const ProductsPage = ({ category }: ProductsPageProps) => {
       {!isLoading && !isError && products.length > 0 && (
         <>
           <div className={styles.controls}>
-            <Dropdown
-              label="Sort by"
-              value={sort}
-              options={SORT_OPTIONS}
-              onChange={handleSortChange}
-              className={styles.sortDropdown}
-            />
+            <label className={styles.sortDropdown}>
+              <span className={styles.controlLabel}>Sort by</span>
 
-            <Dropdown
-              label="Items on page"
-              value={perPage}
-              options={PER_PAGE_OPTIONS}
-              onChange={handlePerPageChange}
-              className={styles.perPageDropdown}
-            />
+              <select
+                className={styles.select}
+                value={sort}
+                onChange={event => handleSortChange(event.target.value)}
+              >
+                <option value="age">Newest</option>
+                <option value="title">Alphabetically</option>
+                <option value="price">Cheapest</option>
+              </select>
+            </label>
+
+            <label className={styles.perPageDropdown}>
+              <span className={styles.controlLabel}>Items on page</span>
+
+              <select
+                className={styles.select}
+                value={perPage}
+                onChange={event => handlePerPageChange(event.target.value)}
+              >
+                <option value="4">4</option>
+                <option value="8">8</option>
+                <option value="16">16</option>
+                <option value="all">All</option>
+              </select>
+            </label>
           </div>
 
           <ProductsList products={visibleProducts} />

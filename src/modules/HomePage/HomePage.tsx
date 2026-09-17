@@ -69,13 +69,22 @@ export const HomePage = () => {
       <h1 className="visually-hidden">Product Catalog</h1>
 
       <section className={styles.hero}>
-        <h1 className={styles.heroTitle}>Welcome to Nice Gadgets store!</h1>
+        <h2 className={styles.heroTitle}>Welcome to Nice Gadgets store!</h2>
         <div className={styles.slider}>
-          <img
-            className={styles.slideImage}
-            src={slides[currentSlide].image}
-            alt={slides[currentSlide].alt}
-          />
+          <div
+            className={styles.sliderTrack}
+            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          >
+            {slides.map(slide => (
+              <div className={styles.slide} key={slide.image}>
+                <img
+                  className={styles.slideImage}
+                  src={slide.image}
+                  alt={slide.alt}
+                />
+              </div>
+            ))}
+          </div>
 
           <button
             type="button"

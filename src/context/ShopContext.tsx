@@ -13,6 +13,7 @@ type ShopContextType = {
   isInCart: (id: number) => boolean;
   increaseQuantity: (id: number) => void;
   decreaseQuantity: (id: number) => void;
+  clearCart: () => void;
 };
 
 type ShopProviderProps = {
@@ -111,6 +112,10 @@ export const ShopProvider = ({ children }: ShopProviderProps) => {
     });
   };
 
+  const clearCart = () => {
+    setCart([]);
+  };
+
   const increaseQuantity = (id: number) => {
     setCart(prevCart =>
       prevCart.map(cartItem => {
@@ -172,6 +177,7 @@ export const ShopProvider = ({ children }: ShopProviderProps) => {
         isInCart,
         increaseQuantity,
         decreaseQuantity,
+        clearCart,
       }}
     >
       {children}

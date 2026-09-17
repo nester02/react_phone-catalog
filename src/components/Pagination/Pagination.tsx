@@ -12,34 +12,31 @@ type PaginationItem =
   | { type: 'page'; value: number }
   | { type: 'dots'; id: string };
 
-// Presentational only: decides which page numbers are shown (with "…" gaps)
 const getItems = (pageCount: number, current: number): PaginationItem[] => {
-  if (pageCount <= 7) {
+  if (pageCount <= 4) {
     return Array.from({ length: pageCount }, (_, index) => ({
       type: 'page',
       value: index + 1,
     }));
   }
 
-  const items: PaginationItem[] = [{ type: 'page', value: 1 }];
-  const start = Math.max(2, current - 1);
-  const end = Math.min(pageCount - 1, current + 1);
-
-  if (start > 2) {
-    items.push({ type: 'dots', id: 'left' });
+  if (current <= 3) {
+    return [
+      { type: 'page', value: 1 },
+      { type: 'page', value: 2 },
+      { type: 'page', value: 3 },
+      { type: 'page', value: 4 },
+    ];
   }
 
-  for (let page = start; page <= end; page += 1) {
-    items.push({ type: 'page', value: page });
-  }
+  const start = Math.min(current - 1, pageCount - 2);
 
-  if (end < pageCount - 1) {
-    items.push({ type: 'dots', id: 'right' });
-  }
-
-  items.push({ type: 'page', value: pageCount });
-
-  return items;
+  return [
+    { type: 'page', value: 1 },
+    { type: 'dots', id: 'left' },
+    { type: 'page', value: start },
+    { type: 'page', value: start + 1 },
+  ];
 };
 
 export const Pagination = ({

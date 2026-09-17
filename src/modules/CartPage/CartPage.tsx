@@ -5,8 +5,13 @@ import { useShop } from '../../context/ShopContext';
 import styles from './CartPage.module.scss';
 
 export const CartPage = () => {
-  const { cart, increaseQuantity, decreaseQuantity, removeFromCart } =
-    useShop();
+  const {
+    cart,
+    increaseQuantity,
+    decreaseQuantity,
+    removeFromCart,
+    clearCart,
+  } = useShop();
 
   const totalQuantity = cart.reduce((acc, item) => {
     return acc + item.quantity;
@@ -71,6 +76,7 @@ export const CartPage = () => {
                     className={styles.quantityButton}
                     aria-label="−"
                     onClick={() => decreaseQuantity(item.product.id)}
+                    disabled={item.quantity === 1}
                   >
                     <IconMinus />
                   </button>
@@ -108,7 +114,11 @@ export const CartPage = () => {
 
             <div className={styles.summaryDivider} />
 
-            <button type="button" className={styles.checkout}>
+            <button
+              type="button"
+              className={styles.checkout}
+              onClick={clearCart}
+            >
               Checkout
             </button>
           </div>

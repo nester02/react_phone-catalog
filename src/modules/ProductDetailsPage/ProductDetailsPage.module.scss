@@ -61,6 +61,50 @@
   color: var(--c-secondary);
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.addToCart {
+  @include primary-button;
+
+  width: 263px;
+
+  @include on-tablet {
+     width: 180px;
+  }
+}
+
+.addToCartAdded {
+  border: 1px solid var(--c-elements);
+  background-color: var(--c-surface);
+  color: var(--c-green);
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--c-surface);
+    box-shadow: none;
+  }
+}
+
+.favButton {
+  @include round-button;
+
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.favButtonActive {
+  color: var(--c-red);
+}
+
 .shortSpecs {
   display: flex;
   flex-direction: column;
@@ -129,4 +173,16 @@
   @include primary-button;
 
   min-width: 180px;
+}
+
+.recommendations {
+  margin-top: 64px;
+
+  @include on-tablet {
+    margin-top: 80px;
+  }
+
+  @include on-desktop {
+    margin-top: 80px;
+  }
 }

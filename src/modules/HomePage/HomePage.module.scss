@@ -16,12 +16,6 @@
   }
 }
 
-// ---- Hero block below is intentionally left as the user wrote it ----
-
-.hero {
-  // width / spacing
-}
-
 .heroTitle {
   margin: 56px auto;
 font-weight: 800;
@@ -35,12 +29,22 @@ letter-spacing: -1%;
   overflow: hidden;
 }
 
+.sliderTrack {
+  display: flex;
+  transition: transform .5s ease;
+}
+
+.slide {
+  min-width: 100%;
+  flex-shrink: 0;
+}
+
 .slideImage {
+  display: block;
+  width: 100%;
   max-width: 1040px;
   max-height: 400px;
   margin: 0 auto;
-  width: 100%;
-  display: block;
   object-fit: cover;
 }
 

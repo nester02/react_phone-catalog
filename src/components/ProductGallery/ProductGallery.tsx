@@ -34,11 +34,16 @@ export const ProductGallery = ({
       </ul>
 
       <div className={styles.mainImageWrapper}>
-        <img
-          src={productImages[imageIndex]}
-          alt={productName}
-          className={styles.mainImage}
-        />
+        {productImages.map((image, index) => (
+          <img
+            key={image}
+            src={image}
+            alt={`${productName}, view ${index + 1}`}
+            className={cn(styles.image, {
+              [styles.imageActive]: imageIndex === index,
+            })}
+          />
+        ))}
       </div>
     </div>
   );

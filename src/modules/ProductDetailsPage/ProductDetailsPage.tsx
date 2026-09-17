@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { ProductDetails } from '../../types';
-import { getProductDetails } from '../../api';
+import { getProductDetails, getProducts } from '../../api';
 import { Loader } from '../../components/Loader';
 import { ErrorBlock } from '../../components/ErrorBlock';
 import { Breadcrumbs } from '../../components/Breadcrumbs';
@@ -10,7 +10,11 @@ import { ProductGallery } from '../../components/ProductGallery';
 import { ProductOptions } from '../../components/ProductOptions';
 import { ProductTechSpecs } from '../../components/ProductTechSpecs';
 import { ProductAbout } from '../../components/ProductAbout';
+import { useShop } from '../../context/ShopContext';
+import type { Product } from '../../types';
+import cn from 'classnames';
 import styles from './ProductDetailsPage.module.scss';
+import { ProductsSlider } from '../../components/ProductsSlider';
 
 const CATEGORY_TITLES = {
   phones: 'Phones',
@@ -25,8 +29,20 @@ export const ProductDetailsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
+  const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
 
   const navigate = useNavigate();
+  const {
+    addToCart,
+    isInCart,
+    addToFavorites,
+    removeFromFavorites,
+    isFavorite,
+  } = useShop();
+
+  const inCart = currentProduct ? isInCart(currentProduct.id) : false;
+  const favorite = currentProduct ? isFavorite(currentProduct.id) : false;
 
   const normalizeCapacity = (capacity: string) => capacity.toLowerCase();
 
@@ -57,7 +73,7 @@ export const ProductDetailsPage = () => {
     navigate(`/product/${newProductId}`);
   };
 
-  const loadProductDetails = () => {
+  const loadProductDetails = useCallback(() => {
     if (!productId) {
       setIsLoading(false);
 
@@ -67,19 +83,56 @@ export const ProductDetailsPage = () => {
     setIsLoading(true);
     setIsError(false);
     setFullProductDetails(null);
+    setCurrentProduct(null);
+    setRecommendedProducts([]);
     setSelectedImageIndex(0);
 
-    getProductDetails(productId)
-      .then(product => {
-        setFullProductDetails(product ?? null);
+    Promise.all([getProductDetails(productId), getProducts()])
+      .then(([details, products]) => {
+        setFullProductDetails(details ?? null);
+        const product = products.find(item => item.itemId === productId);
+
+        setCurrentProduct(product ?? null);
+
+        const recommendations = products
+          .filter(item => item.itemId !== productId)
+          .slice(0, 12);
+
+        setRecommendedProducts(recommendations);
       })
       .catch(() => setIsError(true))
       .finally(() => setIsLoading(false));
+  }, [productId]);
+
+  const handleAddToCart = () => {
+    if (!currentProduct || inCart) {
+      return;
+    }
+
+    addToCart(currentProduct);
   };
+
+  const handleToggleFavorite = () => {
+    if (!currentProduct) {
+      return;
+    }
+
+    if (favorite) {
+      removeFromFavorites(currentProduct.id);
+    } else {
+      addToFavorites(currentProduct);
+    }
+  };
+
+  const shouldShowRecommendations =
+    !isLoading &&
+    !isError &&
+    fullProductDetails &&
+    recommendedProducts.length > 0;
 
   useEffect(() => {
     loadProductDetails();
-  }, [productId]);
+  }, [loadProductDetails]);
 
   return (
     <div className={styles.page}>
@@ -158,6 +211,34 @@ export const ProductDetailsPage = () => {
                 )}
               </div>
 
+              {currentProduct && (
+                <div className={styles.actions}>
+                  <button
+                    type="button"
+                    className={cn(styles.addToCart, {
+                      [styles.addToCartAdded]: inCart,
+                    })}
+                    onClick={handleAddToCart}
+                    disabled={inCart}
+                  >
+                    {inCart ? 'Added to cart' : 'Add to cart'}
+                  </button>
+
+                  <button
+                    type="button"
+                    className={cn(styles.favButton, {
+                      [styles.favButtonActive]: favorite,
+                    })}
+                    onClick={handleToggleFavorite}
+                    aria-label={
+                      favorite ? 'Remove from favorites' : 'Add to favorites'
+                    }
+                  >
+                    {favorite ? '♥' : '♡'}
+                  </button>
+                </div>
+              )}
+
               <div className={styles.shortSpecs}>
                 <div className={styles.specRow}>
                   <span className={styles.specName}>Screen</span>
@@ -205,6 +286,15 @@ export const ProductDetailsPage = () => {
             />
           </div>
         </>
+      )}
+
+      {shouldShowRecommendations && (
+        <div className={styles.recommendations}>
+          <ProductsSlider
+            title="You may also like"
+            products={recommendedProducts}
+          />
+        </div>
       )}
     </div>
   );
