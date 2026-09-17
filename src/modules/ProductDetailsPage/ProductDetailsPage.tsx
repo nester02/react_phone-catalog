@@ -96,8 +96,9 @@ export const ProductDetailsPage = () => {
 
         setCurrentProduct(product ?? null);
 
-        const recommendations = products
+        const recommendations = [...products]
           .filter(item => item.itemId !== productId)
+          .sort(() => Math.random() - 0.5)
           .slice(0, 12);
 
         setRecommendedProducts(recommendations);

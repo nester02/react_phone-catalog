@@ -22,6 +22,16 @@ export const CartPage = () => {
     return acc + item.product.price * item.quantity;
   }, 0);
 
+  const handleCheckout = () => {
+    const shouldClearCart = window.confirm(
+      'Checkout is not implemented yet. Do you want to clear the Cart?',
+    );
+
+    if (shouldClearCart) {
+      clearCart();
+    }
+  };
+
   return (
     <div className={styles.page}>
       <BackButton />
@@ -118,7 +128,7 @@ export const CartPage = () => {
             <button
               type="button"
               className={styles.checkout}
-              onClick={clearCart}
+              onClick={handleCheckout}
             >
               Checkout
             </button>
