@@ -1,3 +1,4 @@
+import { withBase } from '../../utils/withBase';
 import cn from 'classnames';
 import styles from './Icons.module.scss';
 
@@ -10,7 +11,10 @@ const Icon = ({ className, src }: IconProps & { src: string }) => (
   <span
     aria-hidden="true"
     className={cn(styles.icon, className)}
-    style={{ maskImage: `url("${src}")`, WebkitMaskImage: `url("${src}")` }}
+    style={{
+      maskImage: `url("${withBase(src)}")`,
+      WebkitMaskImage: `url("${withBase(src)}")`,
+    }}
   />
 );
 

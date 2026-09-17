@@ -1,3 +1,4 @@
+import { withBase } from '../../../../utils/withBase';
 import { Link } from 'react-router-dom';
 import cn from 'classnames';
 import styles from './Categories.module.scss';
@@ -25,7 +26,7 @@ export const Categories = () => (
         >
           <div className={cn(styles.imageWrapper, styles[category.id])}>
             <img
-              src={category.image}
+              src={withBase(category.image)}
               alt={category.title}
               className={styles.image}
             />

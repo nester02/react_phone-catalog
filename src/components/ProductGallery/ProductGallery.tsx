@@ -1,3 +1,4 @@
+import { withBase } from '../../utils/withBase';
 import cn from 'classnames';
 import styles from './ProductGallery.module.scss';
 import { useState } from 'react';
@@ -40,7 +41,7 @@ export const ProductGallery = ({
                 aria-label={`${productName}, view ${index + 1}`}
               >
                 <img
-                  src={image}
+                  src={withBase(image)}
                   alt=""
                   className={styles.thumbImage}
                   onError={() => handleImageError(index)}
@@ -60,7 +61,7 @@ export const ProductGallery = ({
           return (
             <img
               key={image}
-              src={image}
+              src={withBase(image)}
               alt={`${productName}, view ${index + 1}`}
               className={cn(styles.image, {
                 [styles.imageActive]: imageIndex === index,

@@ -1,3 +1,4 @@
+import { withBase } from '../../utils/withBase';
 import { Link } from 'react-router-dom';
 import { BackButton } from '../../components/BackButton';
 import { IconClose, IconMinus, IconPlus } from '../../components/Icons';
@@ -32,7 +33,7 @@ export const CartPage = () => {
           <p className={styles.emptyText}>Your cart is empty</p>
 
           <img
-            src="/img/cart-is-empty.webp"
+            src={withBase('/img/cart-is-empty.webp')}
             alt="Your cart is empty"
             className={styles.emptyImage}
           />
@@ -57,7 +58,7 @@ export const CartPage = () => {
                   className={styles.imageLink}
                 >
                   <img
-                    src={item.product.image}
+                    src={withBase(item.product.image)}
                     alt={item.product.name}
                     className={styles.image}
                   />

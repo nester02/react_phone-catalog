@@ -1,3 +1,4 @@
+import { withBase } from '../../utils/withBase';
 import { IconChevronLeft, IconChevronRight } from '../../components/Icons';
 import styles from './HomePage.module.scss';
 import cn from 'classnames';
@@ -76,7 +77,7 @@ export const HomePage = () => {
               <div className={styles.slide} key={slide.image}>
                 <img
                   className={styles.slideImage}
-                  src={slide.image}
+                  src={withBase(slide.image)}
                   alt={slide.alt}
                 />
               </div>

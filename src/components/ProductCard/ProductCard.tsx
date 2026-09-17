@@ -1,3 +1,4 @@
+import { withBase } from '../../utils/withBase';
 import { Link } from 'react-router-dom';
 import type { Product } from '../../types';
 import { useShop } from '../../context/ShopContext';
@@ -49,7 +50,11 @@ export const ProductCard = ({
   return (
     <article className={styles.card} data-cy="card">
       <Link to={detailsPath} className={styles.imageLink}>
-        <img src={product.image} alt={product.name} className={styles.image} />
+        <img
+          src={withBase(product.image)}
+          alt={product.name}
+          className={styles.image}
+        />
       </Link>
 
       <Link to={detailsPath} className={styles.title}>

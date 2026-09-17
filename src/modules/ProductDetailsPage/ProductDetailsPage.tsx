@@ -1,3 +1,4 @@
+import { withBase } from '../../utils/withBase';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { ProductDetails } from '../../types';
@@ -152,7 +153,7 @@ export const ProductDetailsPage = () => {
           </p>
 
           <img
-            src="/img/product-not-found.webp"
+            src={withBase('/img/product-not-found.webp')}
             alt="Product was not found"
             className={styles.notFoundImage}
           />
