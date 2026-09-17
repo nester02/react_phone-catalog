@@ -36,6 +36,7 @@ const getItems = (pageCount: number, current: number): PaginationItem[] => {
     { type: 'dots', id: 'left' },
     { type: 'page', value: start },
     { type: 'page', value: start + 1 },
+    { type: 'page', value: start + 2 },
   ];
 };
 

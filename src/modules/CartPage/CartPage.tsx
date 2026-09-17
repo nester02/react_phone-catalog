@@ -32,7 +32,7 @@ export const CartPage = () => {
           <p className={styles.emptyText}>Your cart is empty</p>
 
           <img
-            src="/img/cart-is-empty.png"
+            src="/img/cart-is-empty.webp"
             alt="Your cart is empty"
             className={styles.emptyImage}
           />

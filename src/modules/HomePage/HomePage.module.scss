@@ -1,11 +1,17 @@
 @use '../../styles/mixins' as *;
 
 .page {
-  @include container;
-
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
   gap: 56px;
+
+  > section:not(.hero) {
+    @include container;
+  }
 
   @include on-tablet {
     gap: 64px;
@@ -16,39 +22,86 @@
   }
 }
 
+.hero {
+  padding: 0;
+
+  @include on-tablet {
+    padding-inline: 24px;
+  }
+
+  @include on-desktop {
+    padding-inline: 32px;
+  }
+}
+
 .heroTitle {
-  margin: 56px auto;
-font-weight: 800;
-font-size: 48px;
-line-height: 56px;
-letter-spacing: -1%;
+  margin: 24px auto;
+  max-width: 300px;
+  font-weight: 800;
+  font-size: 32px;
+  line-height: 41px;
+  letter-spacing: -1%;
+
+  @include on-tablet {
+    margin: 56px auto;
+    max-width: 500px;
+    font-size: 48px;
+    line-height: 56px;
+  }
+
+  @include on-desktop {
+    max-width: none;
+  }
 }
 
 .slider {
   position: relative;
+  width: 100%;
   overflow: hidden;
 }
 
 .sliderTrack {
   display: flex;
-  transition: transform .5s ease;
+  width: 100%;
+  transition: transform 0.5s ease;
 }
 
 .slide {
-  min-width: 100%;
-  flex-shrink: 0;
+  display: flex;
+  flex: 0 0 100%;
+  min-width: 0;
+  justify-content: center;
+  box-sizing: border-box;
+
+  @include on-tablet {
+    padding-inline: calc(44px + (1199px - 100vw) * 0.05);
+  }
+
+  @include on-desktop {
+    padding-inline: 24px;
+  }
 }
 
 .slideImage {
   display: block;
   width: 100%;
   max-width: 1040px;
-  max-height: 400px;
-  margin: 0 auto;
+  min-width: 0;
+  height: auto;
+  max-height: 320px;
   object-fit: cover;
+  box-sizing: border-box;
+
+  @include on-tablet {
+    max-height: none;
+    border-radius: 8px;
+  }
 }
 
 .sliderButton {
+  display: none;
+  align-items: center;
+  justify-content: center;
   height: 100%;
   width: 32px;
   background: transparent;
@@ -61,6 +114,10 @@ letter-spacing: -1%;
   font-size: 26px;
   line-height: 1;
   font-weight: 400;
+
+  @include on-tablet {
+    display: flex;
+  }
 }
 
 .prevButton {
@@ -90,33 +147,4 @@ letter-spacing: -1%;
 
 .activeDot {
   background-color: #0F0F11;
-}
-
-@media (max-width: 1199px) {
-  .heroTitle {
-        max-width: 500px;
-  }
-  .slideImage {
-    padding-inline: calc(24px + (1199px - 100vw) * 0.05);
-  }
-}
-
-@media (max-width: 639px) {
-  .hero {
-    padding: 0;
-  }
-  .heroTitle {
-    font-size: 32px;
-    line-height: 41px;
-    margin: 24px auto;
-    max-width: 300px;
-  }
-  .slideImage {
-    padding: 0;
-    max-height: 320px;
-  }
-  .sliderButton {
-    display: none;
-  }
-
 }

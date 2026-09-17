@@ -1,3 +1,4 @@
+import { IconChevronLeft, IconChevronRight } from '../../components/Icons';
 import styles from './HomePage.module.scss';
 import cn from 'classnames';
 
@@ -11,19 +12,15 @@ import { Categories } from './components/Categories';
 
 const slides = [
   {
-    image: '/img/banner.png',
-    alt: 'Main banner',
-  },
-  {
-    image: '/img/banner-phones.png',
+    image: '/img/banner-phones.webp',
     alt: 'Phones banner',
   },
   {
-    image: '/img/banner-tablets.png',
+    image: '/img/banner-tablets.webp',
     alt: 'Tablets banner',
   },
   {
-    image: '/img/banner-accessories.png',
+    image: '/img/banner-accessories.webp',
     alt: 'Accessories banner',
   },
 ];
@@ -92,7 +89,7 @@ export const HomePage = () => {
             onClick={handlePrevSlide}
             aria-label="Previous slide"
           >
-            ‹
+            <IconChevronLeft />
           </button>
 
           <button
@@ -101,7 +98,7 @@ export const HomePage = () => {
             onClick={handleNextSlide}
             aria-label="Next slide"
           >
-            ›
+            <IconChevronRight />
           </button>
         </div>
 

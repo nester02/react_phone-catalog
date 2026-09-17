@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { ProductDetails } from '../../types';
 import { getProductDetails, getProducts } from '../../api';
+import { IconHeart, IconHeartFilled } from '../../components/Icons';
 import { Loader } from '../../components/Loader';
 import { ErrorBlock } from '../../components/ErrorBlock';
 import { Breadcrumbs } from '../../components/Breadcrumbs';
@@ -151,7 +152,7 @@ export const ProductDetailsPage = () => {
           </p>
 
           <img
-            src="/img/product-not-found.png"
+            src="/img/product-not-found.webp"
             alt="Product was not found"
             className={styles.notFoundImage}
           />
@@ -234,7 +235,7 @@ export const ProductDetailsPage = () => {
                       favorite ? 'Remove from favorites' : 'Add to favorites'
                     }
                   >
-                    {favorite ? '♥' : '♡'}
+                    {favorite ? <IconHeartFilled /> : <IconHeart />}
                   </button>
                 </div>
               )}
