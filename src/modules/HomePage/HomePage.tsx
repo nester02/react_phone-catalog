@@ -1,5 +1,3 @@
-import { withBase } from '../../utils/withBase';
-import { IconChevronLeft, IconChevronRight } from '../../components/Icons';
 import styles from './HomePage.module.scss';
 import cn from 'classnames';
 
@@ -32,6 +30,8 @@ export const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const handleNextSlide = () => {
     setCurrentSlide(prevSlide => {
@@ -43,6 +43,32 @@ export const HomePage = () => {
     setCurrentSlide(prevSlide => {
       return (prevSlide - 1 + slides.length) % slides.length;
     });
+  };
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    setTouchEnd(null);
+    setTouchStart(event.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    setTouchEnd(event.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStart === null || touchEnd === null) {
+      return;
+    }
+
+    const distance = touchStart - touchEnd;
+    const minSwipeDistance = 50;
+
+    if (distance > minSwipeDistance) {
+      handleNextSlide();
+    }
+
+    if (distance < -minSwipeDistance) {
+      handlePrevSlide();
+    }
   };
 
   useEffect(() => {
@@ -69,37 +95,44 @@ export const HomePage = () => {
       <section className={styles.hero}>
         <h2 className={styles.heroTitle}>Welcome to Nice Gadgets store!</h2>
         <div className={styles.slider}>
-          <div
-            className={styles.sliderTrack}
-            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+          <button
+            type="button"
+            className={styles.sliderButton}
+            onClick={handlePrevSlide}
+            aria-label="Previous slide"
           >
-            {slides.map(slide => (
-              <div className={styles.slide} key={slide.image}>
-                <img
-                  className={styles.slideImage}
-                  src={withBase(slide.image)}
-                  alt={slide.alt}
-                />
-              </div>
-            ))}
+            ‹
+          </button>
+
+          <div
+            className={styles.sliderViewport}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div
+              className={styles.sliderTrack}
+              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+            >
+              {slides.map(slide => (
+                <div className={styles.slide} key={slide.image}>
+                  <img
+                    className={styles.slideImage}
+                    src={slide.image}
+                    alt={slide.alt}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
           <button
             type="button"
-            className={`${styles.sliderButton} ${styles.prevButton}`}
-            onClick={handlePrevSlide}
-            aria-label="Previous slide"
-          >
-            <IconChevronLeft />
-          </button>
-
-          <button
-            type="button"
-            className={`${styles.sliderButton} ${styles.nextButton}`}
+            className={styles.sliderButton}
             onClick={handleNextSlide}
             aria-label="Next slide"
           >
-            <IconChevronRight />
+            ›
           </button>
         </div>
 

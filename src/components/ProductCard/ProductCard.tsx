@@ -20,6 +20,7 @@ export const ProductCard = ({
     removeFromFavorites,
     isFavorite,
     addToCart,
+    removeFromCart,
     isInCart,
   } = useShop();
 
@@ -41,8 +42,10 @@ export const ProductCard = ({
     }
   };
 
-  const handleAddToCart = () => {
-    if (!inCart) {
+  const handleToggleCart = () => {
+    if (inCart) {
+      removeFromCart(product.id);
+    } else {
       addToCart(product);
     }
   };
@@ -86,15 +89,14 @@ export const ProductCard = ({
           className={cn(styles.addButton, {
             [styles.addButtonAdded]: inCart,
           })}
-          onClick={handleAddToCart}
-          disabled={inCart}
+          onClick={handleToggleCart}
         >
           {inCart ? 'Added to cart' : 'Add to cart'}
         </button>
 
         <button
           type="button"
-          aria-label="Add to favorites"
+          aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
           aria-pressed={favorite}
           className={cn(styles.favButton, {
             [styles.favButtonActive]: favorite,

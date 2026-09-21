@@ -35,7 +35,7 @@
 }
 
 .heroTitle {
-  margin: 24px auto;
+  margin: 0 auto 24px;
   max-width: 300px;
   font-weight: 800;
   font-size: 32px;
@@ -43,7 +43,7 @@
   letter-spacing: -1%;
 
   @include on-tablet {
-    margin: 56px auto;
+    margin: 0 0 32px;
     max-width: 500px;
     font-size: 48px;
     line-height: 56px;
@@ -51,13 +51,35 @@
 
   @include on-desktop {
     max-width: none;
+    margin: 0 auto 56px;
   }
 }
 
 .slider {
-  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 16px;
+
+  width: 100%;
+}
+
+.sliderViewport {
   width: 100%;
   overflow: hidden;
+  touch-action: pan-y;
+
+  @media (max-width: 639px) {
+    aspect-ratio: 1 / 1;
+  }
+
+  @include on-tablet {
+    max-width: 490px;
+  }
+
+  @include on-desktop {
+    max-width: 1040px;
+  }
 }
 
 .sliderTrack {
@@ -67,34 +89,27 @@
 }
 
 .slide {
-  display: flex;
   flex: 0 0 100%;
   min-width: 0;
-  justify-content: center;
-  box-sizing: border-box;
-
-  @include on-tablet {
-    padding-inline: calc(44px + (1199px - 100vw) * 0.05);
-  }
-
-  @include on-desktop {
-    padding-inline: 24px;
-  }
 }
 
 .slideImage {
   display: block;
   width: 100%;
-  max-width: 1040px;
-  min-width: 0;
-  height: auto;
-  max-height: 320px;
+  height: 100%;
   object-fit: cover;
-  box-sizing: border-box;
+
+  @media (max-width: 639px) {
+    aspect-ratio: 1 / 1;
+  }
 
   @include on-tablet {
-    max-height: none;
+    height: 190px;
     border-radius: 8px;
+  }
+
+  @include on-desktop {
+    height: 400px;
   }
 }
 
@@ -102,30 +117,20 @@
   display: none;
   align-items: center;
   justify-content: center;
-  height: 100%;
+
   width: 32px;
-  background: transparent;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  border-radius: 999px;
+  flex-shrink: 0;
+
   border: 1px solid #b4bdc3;
+  border-radius: 999px;
+  background: transparent;
 
   font-size: 26px;
   line-height: 1;
-  font-weight: 400;
 
   @include on-tablet {
     display: flex;
   }
-}
-
-.prevButton {
-  left: 0;
-}
-
-.nextButton {
-  right: 0;
 }
 
 .dots {
