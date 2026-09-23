@@ -116,10 +116,10 @@ export const HomePage = () => {
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
               {slides.map(slide => (
-                <div className={styles.slide} key={withBase(slide.image)}>
+                <div className={styles.slide} key={slide.image}>
                   <img
                     className={styles.slideImage}
-                    src={slide.image}
+                    src={withBase(slide.image)}
                     alt={slide.alt}
                   />
                 </div>
