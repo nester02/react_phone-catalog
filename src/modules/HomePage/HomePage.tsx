@@ -3,6 +3,7 @@ import cn from 'classnames';
 
 import { useEffect, useState } from 'react';
 import type { Product } from '../../types';
+import { withBase } from '../../utils/withBase';
 import { getDiscountProducts, getNewestProducts } from '../../api/products';
 import { Loader } from '../../components/Loader';
 import { ErrorBlock } from '../../components/ErrorBlock';
@@ -115,7 +116,7 @@ export const HomePage = () => {
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
               {slides.map(slide => (
-                <div className={styles.slide} key={slide.image}>
+                <div className={styles.slide} key={withBase(slide.image)}>
                   <img
                     className={styles.slideImage}
                     src={slide.image}
